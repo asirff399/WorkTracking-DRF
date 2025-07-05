@@ -1,0 +1,4 @@
+work_tracking/.env
+db.sqlite3
+__pycache__/
+room1
