@@ -8,7 +8,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ['first_name','last_name','email','password','confirm_password']
+        fields = ['username','first_name','last_name','email','password','confirm_password']
         
     def save(self, **kwargs):
         username = self.validated_data['username']
@@ -35,10 +35,10 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         return user
 
 class UserLoginSerializer(serializers.Serializer):
-    username = serializers.CharField(requred=True)
-    password = serializers.CharField(requred=True)
-    
-class UserSerializer(serializers.ModelField):
+    username = serializers.CharField(required=True)
+    password = serializers.CharField(required=True)
+
+class UserSerializer(serializers.ModelSerializer): 
     class Meta:
         model = User
         fields = ['id','first_name','last_name','email','role','phone','address','date_joined']

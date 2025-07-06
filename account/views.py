@@ -2,12 +2,13 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from .serializers import UserRegisterSerializer,UserLoginSerializer,UserSerializer
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
-from django.utils.http import urlsafe_base64_encode, force_bytes , urlsafe_base64_decode
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.exceptions import InvalidToken, TokenError
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from django.shortcuts import redirect
 from rest_framework.response import Response
 from rest_framework import status
@@ -15,7 +16,8 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 
 # Create your views here.
-
+User = get_user_model()
+ 
 class UserRegisterAPIView(APIView):
     serializer_class = UserRegisterSerializer
 
@@ -55,7 +57,7 @@ def activate(self,uid64,token):
         user = User.objects.get(pk=uid)
     except(User.DoesNotExist,ValueError,TypeError):
         user = None
-        return redirect("http://127.0.0.1:8000/account/register/")
+        return redirect("http://127.0.0.1:8000/account/register")
     
     try:
         access = AccessToken(token)
@@ -67,13 +69,13 @@ def activate(self,uid64,token):
         if user is not None and not user.is_active:
             user.is_active = True
             user.save()
-            return redirect('http://127.0.0.1:8000/account/login/')
+            return redirect('http://127.0.0.1:8000/account/login')
         else:
-            return redirect('http://127.0.0.1:8000/account/login/')
+            return redirect('http://127.0.0.1:8000/account/login')
     except (InvalidToken,TokenError):
-        return redirect('http://127.0.0.1:8000/account/register/')
+        return redirect('http://127.0.0.1:8000/account/register')
     except Exception:
-        return redirect('http://127.0.0.1:8000/account/register/')
+        return redirect('http://127.0.0.1:8000/account/register')
     
 class UserLoginAPIView(APIView):
     serializer_class = UserLoginSerializer
