@@ -21,6 +21,3 @@ class Attendance(models.Model):
             exit = timedelta(hours=self.exit_time.hour, minutes=self.exit_time.minute, seconds=self.exit_time.second)
             self.total_hours = exit - entry
             self.save()
-            
-            
-    
