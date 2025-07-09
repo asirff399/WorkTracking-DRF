@@ -3,7 +3,7 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
-from .views import UserRegisterAPIView, UserLoginAPIView, activate, UserLogoutAPIView, UserViewset
+from .views import UserRegisterAPIView, UserLoginAPIView, activate, UserLogoutAPIView, UserViewset, UserProfileUpdateApiView
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
@@ -15,6 +15,7 @@ urlpatterns = [
     path('login', UserLoginAPIView.as_view(), name='login'),
     path('logout', UserLogoutAPIView.as_view(), name='logout'),
     path('activate/<uid64>/<token>/', activate, name='activate'),
+    path('edit_profile', UserProfileUpdateApiView.as_view(), name='edit_profile'),
     
     # JWT
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),

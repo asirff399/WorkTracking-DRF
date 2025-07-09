@@ -6,6 +6,10 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.utils import timezone
 from datetime import time
+from django.utils.dateparse import parse_date
+from django.template.loader import render_to_string
+from weasyprint import HTML
+from django.http import HttpResponse
 
 # Create your views here.
 class AttendanceViewSet(viewsets.ModelViewSet):
@@ -60,3 +64,28 @@ class AttendanceViewSet(viewsets.ModelViewSet):
         
         serializer = AttendanceSerializer(attendance)
         return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    def export_pdf(self, request):
+        employee = request.user.employee
+        start_date = parse_date(request.GET.get('start_date'))
+        end_date = parse_date(request.GET.get('end_date'))
+        
+        if not start_date or not end_date:
+            return Response({'error': 'Missing or invalid date range'},status=400)
+
+        records = Attendance.objects.filter(employee=employee, date__range=(start_date,end_date)).order_by('date')
+        
+        html_string = render_to_string('pdf_report.html', {
+            'records': records,
+            'employee': employee,
+            'start_date': start_date,
+            'end_date': end_date,
+        })
+        
+        html = HTML(string=html_string)
+        pdf_file = html.write_pdf()
+        
+        response = HttpResponse(pdf_file, content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="attendance_report.pdf"'
+        return response

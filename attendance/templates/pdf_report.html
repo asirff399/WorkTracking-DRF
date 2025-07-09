@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Attendance Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 14px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+        th { background-color: #f2f2f2; }
+        h2 { text-align: center; }
+    </style>
+</head>
+<body>
+    <h2>Attendance Report</h2>
+    <p><strong>Employee:</strong> {{ employee.user.get_full_name }}</p>
+    <p><strong>Period:</strong> {{ start_date }} to {{ end_date }}</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Entry Time</th>
+                <th>Exit Time</th>
+                <th>Total Hours</th>
+                <th>Late?</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for record in records %}
+            <tr>
+                <td>{{ record.date }}</td>
+                <td>{{ record.entry_time }}</td>
+                <td>{{ record.exit_time }}</td>
+                <td>{{ record.total_hours }}</td>
+                <td>{{ "Yes" if record.is_late else "No" }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

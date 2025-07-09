@@ -14,6 +14,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
+from django.shortcuts import get_object_or_404
 
 # Create your views here.
 User = get_user_model()
@@ -142,3 +143,18 @@ class UserViewset(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     # permission_classes = [IsAuthenticated]
+    
+class UserProfileUpdateApiView(APIView):
+    # permission_classes = [IsAuthenticated]
+
+    def put(self,request,*args, **kwargs):
+        user = request.user
+        user = get_object_or_404(User,user=user)
+
+        user_serializer = UserSerializer(user,data=request.data.get('user'))
+
+        if user_serializer.is_valid():
+            user_serializer.save()
+            return Response({"user": user_serializer.data}, status=status.HTTP_200_OK)
+        
+        return Response({"user_errors": user_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
